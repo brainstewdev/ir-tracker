@@ -1,6 +1,0 @@
-{
-    "port": "COM6",
-    "board": "arduino:avr:uno",
-    "programmer": "avrisp",
-    "sketch": "sensori_multipli\\sensori_multipli.ino"
-}
