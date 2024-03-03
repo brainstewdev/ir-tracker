@@ -75,6 +75,9 @@ int calcolaOffset(int x1, int x2, int x3, int x4, int x5){
     // Serial.print(diffEstremi);
     // Serial.print("diff centrali:");
     // Serial.print(diffCentrali);
+
+    if(diffCentrali <= 50 && diffEstremi <= 100) return 0;
+
     if(diffEstremi > diffCentrali){
         return (x1-x5) > 0 ? -5 : +5;
     }else{
