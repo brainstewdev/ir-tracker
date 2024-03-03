@@ -2,6 +2,20 @@
 
 #define SERVO_PIN 9
 
+
+/*
+    documentazione generale
+
+    per collgare i phototransistor si va a collegare il catodo con il - e l'anodo al + con 
+    un a resistenza di 10kohm
+
+    all'interno dell'array pins verrano inseriti i pin a cui sono collegati i phototransistor, 
+    da sinistra verso destra.
+
+    all'inizio il servo sarà centrato, saranno impostati i pin in input e poi inizializza la comunicazione seriale
+*/
+
+
 Servo servo;
 
 int pos = 90; // posizione del servo, di partenza centrata
@@ -45,11 +59,9 @@ void loop(){
     */
     int off = calcolaOffset(lett[0], lett[1], lett[2], lett[3], lett[4]);
     // gira il servo nella direzione dettata, utilizzando una funzione che controlli che non sia fuori dal bound il nuovo valore  
-    // Serial.print("posizione attuale:"); Serial.print(pos); 
     
     servo.write(pos + off);   
     pos = servo.read();
-    // Serial.print("posizione mod:"); Serial.println(pos); 
     // aspetta un attimo
     delay(15);
 }
@@ -64,17 +76,8 @@ void loop(){
 */
 int calcolaOffset(int x1, int x2, int x3, int x4, int x5){
     // calcolo errori quadratici
-    // Serial.print("diff estremi semplice:");
-    // Serial.print((x1-x5));
-    // Serial.print("diff centrali semplice:");
-    // Serial.print((x2-x4));
-    // Serial.println();
     int diffEstremi =  (x1-x5) * (x1-x5);
     int diffCentrali = (x2-x4) * (x2-x4);
-    // Serial.print("diff estremi:");
-    // Serial.print(diffEstremi);
-    // Serial.print("diff centrali:");
-    // Serial.print(diffCentrali);
 
     if(diffCentrali <= 50 && diffEstremi <= 100) return 0;
 
