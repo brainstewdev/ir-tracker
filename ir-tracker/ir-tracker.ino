@@ -44,13 +44,15 @@ void loop(){
     // legge i valori dei sensori
      for(int i = 0; i < 5; i++){
         lett[i] = analogRead(pinS[i]);
+        /*
         Serial.print("{");
         Serial.print(i);
         Serial.print(":");
         Serial.print(lett[i]);
         Serial.print("}");
+        */
     }
-    Serial.println();
+   // Serial.println();
     // fa cose
     /* 
         quello che deve succedere: 
@@ -78,9 +80,25 @@ int calcolaOffset(int x1, int x2, int x3, int x4, int x5){
     // calcolo errori quadratici
     int diffEstremi =  (x1-x5) * (x1-x5);
     int diffCentrali = (x2-x4) * (x2-x4);
+    // se è abbastanza centrato: vado a fare fine tuning
+    if(diffCentrali <= 50 && diffEstremi <= 100){
+        int diffSX = (x3-x2)*(x3-x2);
+        int diffDX = (x4-x4)*(x4-x4);
+        Serial.print("diff SX:");
+        Serial.print(diffSX);
+        Serial.print("\tdiff DX:");
+        Serial.print(diffDX);
+        Serial.println();
 
-    if(diffCentrali <= 50 && diffEstremi <= 100) return 0;
-
+        if(diffDX <= 50 && diffSX <= 50){
+            return 0; 
+        }
+        Serial.print("baby step");
+        int off =  diffDX > diffSX ? 1 : -1;
+        Serial.println(off);
+        return off;
+    } 
+    // altrimenti vado a correggere di più
     if(diffEstremi > diffCentrali){
         return (x1-x5) > 0 ? -5 : +5;
     }else{
