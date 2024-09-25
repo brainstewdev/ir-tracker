@@ -1,6 +1,6 @@
 #include<Servo.h>
 
-#define SERVO_PIN 9
+#define SERVO_PIN 3
 
 
 /*
@@ -15,14 +15,14 @@
     all'inizio il servo sarà centrato, saranno impostati i pin in input e poi inizializza la comunicazione seriale
 */
 
-
+  
 Servo servo;
 
 int pos = 90; // posizione del servo, di partenza centrata
 
-int pinS[] = {A0, A1, A2, A3, A4};
+int pinS[] = {A0, A1, A2, A3, A4, A5};
 
-int lett[] = {0, 0, 0,0,0};
+int lett[] = {0, 0, 0,0,0, 0};
 
 void setup(){
     /*
@@ -30,7 +30,7 @@ void setup(){
         - imposta il servo
         - inizializza serial per debug
     */
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 6; i++){
         pinMode(pinS[i], INPUT);
     }
 
@@ -42,15 +42,15 @@ void setup(){
 
 void loop(){
     // legge i valori dei sensori
-     for(int i = 0; i < 5; i++){
+     for(int i = 0; i < 6; i++){
         lett[i] = analogRead(pinS[i]);
-        /*
+        
         Serial.print("{");
         Serial.print(i);
         Serial.print(":");
         Serial.print(lett[i]);
         Serial.print("}");
-        */
+        
     }
    // Serial.println();
     // fa cose
@@ -59,9 +59,11 @@ void loop(){
             ho una funzione F che ha come parametri i valori letti dai 5 sensori.
             con una funzione matematica calcolo il valore di offset della posizione. (se devo spostarmi da una parte o dall'altra)
     */
-    int off = calcolaOffset(lett[0], lett[1], lett[2], lett[3], lett[4]);
+    int off = calcolaOffset(lett[0], lett[1], lett[2], lett[3], lett[4], lett[5]);
     // gira il servo nella direzione dettata, utilizzando una funzione che controlli che non sia fuori dal bound il nuovo valore  
-    
+    Serial.println();
+    Serial.print("off:");
+    Serial.println(off);
     servo.write(pos + off);   
     pos = servo.read();
     // aspetta un attimo
@@ -76,37 +78,49 @@ void loop(){
     quindi calcolo per ogni coppia l'errore quadratico e in base a quale è minore da un certo contributo all'offset
     poi capirò come usare x3 (idea: per piccoli aggiustamenti mi baso su x2 e x3 e x4 e x3)
 */
-int calcolaOffset(int x1, int x2, int x3, int x4, int x5){
-    // calcolo errori quadratici
-    int diffEstremi =  (x1-x5) * (x1-x5);
-    int diffCentrali = (x2-x4) * (x2-x4);
-    // se è abbastanza centrato: vado a fare fine tuning
-    if(diffCentrali <= 50 && diffEstremi <= 100){
-        int diffSX = (x3-x2)*(x3-x2);
-        int diffDX = (x4-x4)*(x4-x4);
-        Serial.print("diff SX:");
-        Serial.print(diffSX);
-        Serial.print("\tdiff DX:");
-        Serial.print(diffDX);
-        Serial.println();
-
-        if(diffDX <= 50 && diffSX <= 50){
-            return 0; 
-        }
-        Serial.print("baby step");
-        int off =  diffDX > diffSX ? 1 : -1;
-        Serial.println(off);
-        return off;
-    } 
-    // altrimenti vado a correggere di più
-    if(diffEstremi > diffCentrali){
-        return (x1-x5) > 0 ? -5 : +5;
-    }else{
-        return (x2-x4) > 0 ? -2 : +2;
+int calcolaOffset(int x1, int x2, int x3, int x4, int x5, int x6){
+    // dove sto puntando sarà il minimo: mi spost vero chi ha una lettura minore
+    int arrLetture[] = {x1,x2,x3,x4,x5,x6};
+    int sensMin = posMin(arrLetture, 6);
+    Serial.print("lettura minore:");
+    Serial.print(sensMin);
+    Serial.println();
+    if(sensMin > -1){
+     
+      if(diffMax(arrLetture,6) > 200){
+        
+        return map(sensMin, 0, 5, 10,-10);
+      }
     }
     return 0;
 }
+// restituisce la massima differenza tra un sensore e uno adiacente
+int diffMax(int *arr, int dim){
+  int max = -1;
+  int diffSx,diffDx;
+  for(int i = 1; i < dim-1; i++){
+    diffSx = (arr[i-1]-arr[i])*(arr[i-1]-arr[i]);
+    diffDx = (arr[i]-arr[i+1])*(arr[i]-arr[i+1]);
+    if(diffSx > max){
+      max = diffSx;
+    }else if(diffDx > max){
+      max = diffDx;
+    }
+  }
+  return max;
+}
 
+int posMin(int *arr, int dim){
+  int min = 1023;
+  int pos = -1;
+  for(int i = 0; i < dim; i++){
+    if(arr[i] < min){
+      min = arr[i];
+      pos = i;
+    }
+  }
+  return pos;
+}
 /*
     funzione che data una posizione (globale) e un offset restituisce il valore che:
         - è posizione + offset se <= 180 e >= 0
