@@ -52,46 +52,28 @@ void loop(){
         Serial.print("}");
         
     }
-   // Serial.println();
-    // fa cose
-    /* 
-        quello che deve succedere: 
-            ho una funzione F che ha come parametri i valori letti dai 5 sensori.
-            con una funzione matematica calcolo il valore di offset della posizione. (se devo spostarmi da una parte o dall'altra)
-    */
     int off = calcolaOffset(lett[0], lett[1], lett[2], lett[3], lett[4], lett[5]);
-    // gira il servo nella direzione dettata, utilizzando una funzione che controlli che non sia fuori dal bound il nuovo valore  
-    Serial.println();
-    Serial.print("off:");
-    Serial.println(off);
     servo.write(pos + off);   
     pos = servo.read();
-    // aspetta un attimo
     delay(15);
 }
 
 /*
-    funzione che presi i valori letti dai vari sensori (con x3 quello centrale e x1 quello più a sinistra)
-    calcola l'offset
-    per farlo mi baso sull'errore:
-    voglio essere nella situazione dove i due sensori opposti hanno un valore uguale.
-    quindi calcolo per ogni coppia l'errore quadratico e in base a quale è minore da un certo contributo all'offset
-    poi capirò come usare x3 (idea: per piccoli aggiustamenti mi baso su x2 e x3 e x4 e x3)
+    funzione che date le letture dei sensori calcola l'offset
 */
 int calcolaOffset(int x1, int x2, int x3, int x4, int x5, int x6){
-    // dove sto puntando sarà il minimo: mi spost vero chi ha una lettura minore
+    // dove sto puntando sarà il minimo: mi sposto verso chi ha una lettura minore
     int arrLetture[] = {x1,x2,x3,x4,x5,x6};
     int sensMin = posMin(arrLetture, 6);
-    Serial.print("lettura minore:");
-    Serial.print(sensMin);
-    Serial.println();
+    // se esiste un sensore con lettura minima
     if(sensMin > -1){
-     
+    // se la differenza tra le letture è maggiore della soglia allora:
       if(diffMax(arrLetture,6) > 200){
-        
+        // restituisi un offset che varia da 10 a -10
         return map(sensMin, 0, 5, 10,-10);
       }
     }
+    // restituisci un offset nullo (sta fermo)
     return 0;
 }
 // restituisce la massima differenza tra un sensore e uno adiacente
@@ -109,7 +91,7 @@ int diffMax(int *arr, int dim){
   }
   return max;
 }
-
+// funzione che dato un array ne calcola la posizione contenente il valore minore
 int posMin(int *arr, int dim){
   int min = 1023;
   int pos = -1;
