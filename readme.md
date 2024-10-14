@@ -6,8 +6,14 @@ per quanto riguarda l'hardware ho utilizzato un arduino UNO per la disponibilit�
 Analogiche in ingresso (6 a cui ho collegato 6 sensori). avendo poi scelto di utilizzare un servomotore non alimentabile direttamente dall'alimentazione fornita dall'Arduino ho scelto di utilizzare un alimentatore da laptop in combinazione con uno step-down-converter che mi permette così di alimentare sia l'arduino che il servomotore senza problemi.
 
 i sensori sono collegati in maniera molto semplice con il seguente schema (uno per sensore):
+![schema di collegamento per il sensore](img/schema_sensore.png)
 
-mentre l'emettitore è per questioni prototipali collegato a 5v e al ground della breadboard a cui è collegato il resto del circuito ma ovviamente si può alimentare con un'alimentazione esterna non avendo logica, come ad esempio una batteria.
+mentre l'emettitore è per questioni prototipali collegato a 5v e al ground della breadboard tramite una resistenza da 220 $\Omega$ a cui è collegato il resto del circuito ma ovviamente si può alimentare con un'alimentazione esterna non avendo logica, come ad esempio una batteria.
+
+schema dei collegamenti generale:
+![schema collegamenti generale](img/schema_generale.png)
+
+(per quanto riguarda gli schemi i sensori IR non erano presenti nella libreria del software utilizzato, nella pratica sono scuri).
 ## SW
 per quanto riguarda il SW il programma è abbastanza semplice, viene fatta la lettura dei sei sensori ricevendo quindi sei valori che vanno da 0 a 1023 rappresentando 0 un perfetto allineamento del sensore alla sorgente IR mentre 1023 un disallineamento massimo (sorgente ostruita).
 
