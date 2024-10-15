@@ -15,7 +15,7 @@ l'hardware coinvolto è:
 
 per la parte software invece si basa sul trovare il sensore con la minima lettura (quello quindi che punta maggiormente verso la sorgente) e girare la base verso quel sensore, in modo da centrarlo.
 
-Link a repo: [link al progetto github](https://github.com/brainstewdev/ir-tracker)
+Link a repo: https://github.com/brainstewdev/ir-tracker
 
 Licenza scelta: GNU General Public License v3
 
